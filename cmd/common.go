@@ -2,16 +2,29 @@ package cmd
 
 import "encoding/json"
 
-func indentJSONWithByteArray(jsonData []byte) (string, error) {
-	var data map[string]interface{}
-	// Unmarshal the JSON data into the map
-	err := json.Unmarshal(jsonData, &data)
-	if err != nil {
-		return "", err
+func indentJSONWithByteArray(jsonData []byte, path RemoteHostPathType) (string, error) {
+	var result []byte
+	switch path {
+	case ipAddr:
+		var data map[string]interface{}
+		err := json.Unmarshal(jsonData, &data)
+		if err != nil {
+			return "", err
+		}
+		result, err = json.MarshalIndent(data, "", "  ")
+		if err != nil {
+			return "", err
+		}
+	case contactInfo:
+		var data []interface{}
+		err := json.Unmarshal(jsonData, &data)
+		if err != nil {
+			return "", err
+		}
+		result, err = json.MarshalIndent(data, "", "  ")
+		if err != nil {
+			return "", err
+		}
 	}
-	indentedJSON, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return "", err
-	}
-	return string(indentedJSON), nil
+	return string(result), nil
 }
