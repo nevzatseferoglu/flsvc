@@ -1,6 +1,6 @@
 # fl-service-cli
 
-Client for interacting with flower federated learning service.
+CLI tool which acting as a client for https://fl-service-api-doc.netlify.app/.
 
 ```bash
 This API caters to data scientists, simplifying remote host communication with service endpoints.It allows users to efficiently manage
