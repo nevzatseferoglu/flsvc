@@ -24,5 +24,6 @@ Use "flsvc [command] --help" for more information about a command.
 ```
 
 ## ToDO
+
 - [ ] BubbleTea integration
-= [ ] Add remaning routes
+- [ ] Add remaning routes
