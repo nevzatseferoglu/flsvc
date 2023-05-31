@@ -1,6 +1,7 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/package cmd
+Copyright © 2023 Nevzat Seferoglu nevzatseferoglu@gmail.com
+*/
+package cmd
 
 import (
 	"fmt"
@@ -64,6 +65,7 @@ func newHTTPClient(timeout time.Duration) *http.Client {
 func Execute() {
 	rootCmd.AddCommand(
 		remoteHostCmd,
+		pingCmd,
 	)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

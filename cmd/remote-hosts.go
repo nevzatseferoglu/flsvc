@@ -1,32 +1,13 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 Nevzat Seferoglu nevzatseferoglu@gmail.com
 */
 package cmd
 
 import (
 	"fmt"
-	"io"
-	"net"
 
 	"github.com/spf13/cobra"
 )
-
-type RemoteHostPathType int
-
-const (
-	root RemoteHostPathType = iota
-	ipAddr
-	contactInfo
-)
-
-func (p RemoteHostPathType) String() string {
-	return [...]string{"remote-hosts", "", "contact-info"}[p]
-}
-
-type RemoteHostCommand struct {
-	IpAddr      net.IP
-	ContackInfo string
-}
 
 var remoteHostData RemoteHostCommand
 
@@ -36,6 +17,7 @@ var remoteHostCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mvalue := make(map[RemoteHostPathType]string, 0)
 		switch {
+		// print properties of the host machine which has given IP address
 		case remoteHostData.IpAddr != nil:
 			mvalue[ipAddr] = remoteHostData.IpAddr.String()
 			buf, err := remoteHostGetWithGivenPath(ipAddr, mvalue)
@@ -47,6 +29,7 @@ var remoteHostCmd = &cobra.Command{
 				return fmt.Errorf("indentJSON is unsuccessful, err: %w\n", err)
 			}
 			cmd.Println(str)
+		// print all remote hosts which are belonging to given contact information
 		case len(remoteHostData.ContackInfo) != 0:
 			mvalue[contactInfo] = remoteHostData.ContackInfo
 			buf, err := remoteHostGetWithGivenPath(contactInfo, mvalue)
@@ -58,34 +41,36 @@ var remoteHostCmd = &cobra.Command{
 				return fmt.Errorf("indentJSON is unsuccessful, err: %w\n", err)
 			}
 			cmd.Println(str)
+		// print all remote hosts which are belonging to given contact information
+		case len(remoteHostData.FLIdentifier) != 0:
+			mvalue[flIdentifier] = remoteHostData.FLIdentifier
+			buf, err := remoteHostGetWithGivenPath(flIdentifier, mvalue)
+			if err != nil {
+				return fmt.Errorf("remoteHostGetWithGivenPath is unsuccessful, err: %w\n", err)
+			}
+			str, err := indentJSONWithByteArray(buf, flIdentifier)
+			if err != nil {
+				return fmt.Errorf("indentJSON is unsuccessful, err: %w\n", err)
+			}
+			cmd.Println(str)
+		// print all recorded remote hosts
+		default:
+			buf, err := remoteHostGetWithGivenPath(root, nil)
+			if err != nil {
+				return fmt.Errorf("remoteHostGetWithGivenPath is unsuccessful, err: %w\n", err)
+			}
+			str, err := indentJSONWithByteArray(buf, root)
+			if err != nil {
+				return fmt.Errorf("indentJSON is unsuccessful, err: %w\n", err)
+			}
+			cmd.Println(str)
 		}
 		return nil
 	},
 }
 
-func remoteHostGetWithGivenPath(path RemoteHostPathType, m map[RemoteHostPathType]string) ([]byte, error) {
-	url := ""
-	switch path {
-	case root:
-		url = fmt.Sprintf("%s/%s", rootURL.String(), path.String())
-	case ipAddr:
-		url = fmt.Sprintf("%s/%s/%s", rootURL.String(), root.String(), m[ipAddr])
-	case contactInfo:
-		url = fmt.Sprintf("%s/%s/%s/%s", rootURL.String(), root.String(), path.String(), m[contactInfo])
-	}
-	resp, err := client.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("Request is unsuccessful, err: %w\n", err)
-	}
-	defer resp.Body.Close()
-	buf, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("ReadAll is unsuccessful, err: %w\n", err)
-	}
-	return buf, nil
-}
-
 func init() {
 	remoteHostCmd.Flags().IPVar(&remoteHostData.IpAddr, "ip-addr", nil, "IP address of the remote host")
 	remoteHostCmd.Flags().StringVar(&remoteHostData.ContackInfo, "contact-info", "", "Contact info of the remote hosts")
+	remoteHostCmd.Flags().StringVar(&remoteHostData.FLIdentifier, "fl-identifier", "", "Flower federeated learning cluster identifier")
 }
