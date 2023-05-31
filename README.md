@@ -13,7 +13,9 @@ Usage:
 
 Available Commands:
   completion   Generate the autocompletion script for the specified shell
+  docker       Install and get the states of the docker dependencies
   help         Help about any command
+  ping         Ping the remote host which has the given IPAddress
   remote-hosts Remote host operations
 
 Flags:
@@ -23,7 +25,8 @@ Flags:
 Use "flsvc [command] --help" for more information about a command.
 ```
 
-## ToDO
+## ToDo
 
+- [ X ] Add remaning routes
 - [ ] BubbleTea integration
-- [ ] Add remaning routes
+- [ ] Refactoring, create unique package for each child of the root command (encapsulation)
