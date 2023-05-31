@@ -27,6 +27,6 @@ Use "flsvc [command] --help" for more information about a command.
 
 ## ToDo
 
-- [ X ] Add remaning routes
+- [x] Add remaning routes
 - [ ] BubbleTea integration
 - [ ] Refactoring, create unique package for each child of the root command (encapsulation)
