@@ -1,4 +1,4 @@
-# fl-service-cli
+# flsvc
 
 CLI tool which acting as a client for https://fl-service-api-doc.netlify.app/.
 
