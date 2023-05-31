@@ -55,11 +55,11 @@ var remoteHostCmd = &cobra.Command{
 			cmd.Println(str)
 		// print all recorded remote hosts
 		default:
-			buf, err := remoteHostGetWithGivenPath(root, nil)
+			buf, err := remoteHostGetWithGivenPath(remoteHosts, nil)
 			if err != nil {
 				return fmt.Errorf("remoteHostGetWithGivenPath is unsuccessful, err: %w\n", err)
 			}
-			str, err := indentJSONWithByteArray(buf, root)
+			str, err := indentJSONWithByteArray(buf, remoteHosts)
 			if err != nil {
 				return fmt.Errorf("indentJSON is unsuccessful, err: %w\n", err)
 			}

@@ -13,15 +13,18 @@ import (
 type RemoteHostPathType int
 
 const (
-	root RemoteHostPathType = iota
+	remoteHosts RemoteHostPathType = iota
 	ipAddr
 	contactInfo
 	flIdentifier
 	ping
+	docker
+	dockerStates
+	dockerInstall
 )
 
 func (p RemoteHostPathType) String() string {
-	return [...]string{"remote-hosts", "", "contact-info", "fl-identifier", "ping"}[p]
+	return [...]string{"remote-hosts", "", "contact-info", "fl-identifier", "ping", "docker", "states", "install"}[p]
 }
 
 type RemoteHostCommand struct {
@@ -33,16 +36,19 @@ type RemoteHostCommand struct {
 func remoteHostGetWithGivenPath(path RemoteHostPathType, m map[RemoteHostPathType]string) ([]byte, error) {
 	url := ""
 	switch path {
-	case root:
+	case remoteHosts:
 		url = fmt.Sprintf("%s/%s", rootURL.String(), path.String())
 	case ipAddr:
-		url = fmt.Sprintf("%s/%s/%s", rootURL.String(), root.String(), m[ipAddr])
+		url = fmt.Sprintf("%s/%s/%s", rootURL.String(), remoteHosts.String(), m[ipAddr])
 	case contactInfo:
-		url = fmt.Sprintf("%s/%s/%s/%s", rootURL.String(), root.String(), path.String(), m[contactInfo])
+		url = fmt.Sprintf("%s/%s/%s/%s", rootURL.String(), remoteHosts.String(), path.String(), m[contactInfo])
 	case flIdentifier:
-		url = fmt.Sprintf("%s/%s/%s/%s", rootURL.String(), root.String(), path.String(), m[flIdentifier])
+		url = fmt.Sprintf("%s/%s/%s/%s", rootURL.String(), remoteHosts.String(), path.String(), m[flIdentifier])
 	case ping:
 		url = fmt.Sprintf("%s/%s/%s", rootURL.String(), ping.String(), m[ping])
+	case docker:
+		// get states of docker dependencies of remote host
+		url = fmt.Sprintf("%s/%s/%s/%s", rootURL.String(), docker.String(), dockerStates.String(), m[docker])
 	}
 	resp, err := client.Get(url)
 	if err != nil {
@@ -59,7 +65,7 @@ func remoteHostGetWithGivenPath(path RemoteHostPathType, m map[RemoteHostPathTyp
 func indentJSONWithByteArray(jsonData []byte, path RemoteHostPathType) (string, error) {
 	var result []byte
 	switch path {
-	case ipAddr, ping:
+	case ipAddr, ping, dockerStates, dockerInstall:
 		var data map[string]interface{}
 		err := json.Unmarshal(jsonData, &data)
 		if err != nil {
@@ -69,7 +75,7 @@ func indentJSONWithByteArray(jsonData []byte, path RemoteHostPathType) (string, 
 		if err != nil {
 			return "", err
 		}
-	case contactInfo, flIdentifier, root:
+	case contactInfo, flIdentifier, remoteHosts:
 		var data []interface{}
 		err := json.Unmarshal(jsonData, &data)
 		if err != nil {

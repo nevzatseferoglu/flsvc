@@ -66,6 +66,7 @@ func Execute() {
 	rootCmd.AddCommand(
 		remoteHostCmd,
 		pingCmd,
+		dockerCmd,
 	)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
